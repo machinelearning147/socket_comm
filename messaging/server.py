@@ -1,28 +1,45 @@
 import socket
 import threading
 
-# Function to handle each client connection
+# Function to handle receiving messages from the client
 def handle_client(client_socket, client_address):
     print(f"[NEW CONNECTION] {client_address} connected.")
-    while True:
-        try:
-            # Receive message from client
-            message = client_socket.recv(1024).decode('utf-8')
-            if not message:
+    
+    # Thread for receiving messages
+    def receive_messages():
+        while True:
+            try:
+                # Receive message from client
+                message = client_socket.recv(1024).decode('utf-8')
+                if not message:
+                    break
+                print(f"[{client_address}] {message}")
+            except:
                 break
-            print(f"[{client_address}] {message}")
-            
-            # Send a response back to the client
-            client_socket.send(f"Server received: {message}".encode('utf-8'))
-        except:
-            break
+
+    # Thread for sending messages to the client
+    def send_messages():
+        while True:
+            # Input message to send to the client
+            message = input("You (Server): ")
+            client_socket.send(message.encode('utf-8'))
+
+    # Start both threads for sending and receiving messages
+    receive_thread = threading.Thread(target=receive_messages)
+    send_thread = threading.Thread(target=send_messages)
+
+    receive_thread.start()
+    send_thread.start()
+
+    receive_thread.join()
+    send_thread.join()
 
     # Close the connection when done
     print(f"[DISCONNECTED] {client_address} disconnected.")
     client_socket.close()
 
 # Main function to start the server
-def start_server(host='127.0.0.1', port=5555):
+def start_server(host='127.0.0.1', port=5557):  # Use the server's IP address here
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
     server.listen()
