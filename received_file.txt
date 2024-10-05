@@ -1,0 +1,87 @@
+To set up SSH with GitHub, follow these steps:
+
+### Step 1: Check for Existing SSH Keys
+Before generating a new SSH key, check if you already have one.
+
+```bash
+ls -al ~/.ssh
+```
+
+If you see `id_rsa.pub` or `id_ed25519.pub`, you already have an SSH key. You can skip to **Step 3** to add it to GitHub.
+
+### Step 2: Generate a New SSH Key
+If you don’t have an existing key, generate one. Use either RSA (recommended for compatibility) or Ed25519 (stronger and more efficient).
+
+#### RSA:
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+
+#### Ed25519 (recommended for modern systems):
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+Press Enter to save the key in the default location (`~/.ssh/id_rsa` or `~/.ssh/id_ed25519`). You can also choose a different file path.
+
+When prompted, you can choose a passphrase or leave it empty.
+
+### Step 3: Add the SSH Key to the SSH Agent
+Start the SSH agent and add your key.
+
+```bash
+eval "$(ssh-agent -s)"
+```
+
+Now add the key you generated:
+
+#### RSA:
+```bash
+ssh-add ~/.ssh/id_rsa
+```
+
+#### Ed25519:
+```bash
+ssh-add ~/.ssh/id_ed25519
+```
+
+### Step 4: Add SSH Key to GitHub
+Copy your public key to your clipboard.
+
+#### RSA:
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+
+#### Ed25519:
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+Copy the output of this command.
+
+1. Go to [GitHub SSH keys settings](https://github.com/settings/keys).
+2. Click **New SSH Key**.
+3. Paste your key in the "Key" field, give it a title, and click **Add SSH key**.
+
+### Step 5: Test SSH Connection
+Run the following command to test if your SSH connection is working with GitHub:
+
+```bash
+ssh -T git@github.com
+```
+
+If it's successful, you should see a message like this:
+
+```
+Hi username! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+### Step 6: Use SSH with Git
+Now you can clone repositories using SSH:
+
+```bash
+git clone git@github.com:username/repository.git
+```
+
+That's it! Your SSH setup with GitHub is complete.
