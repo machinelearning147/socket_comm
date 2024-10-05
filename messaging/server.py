@@ -1,5 +1,6 @@
 import socket
 import threading
+import sys
 
 # Function to handle receiving messages from the client
 def handle_client(client_socket, client_address):
@@ -13,7 +14,9 @@ def handle_client(client_socket, client_address):
                 message = client_socket.recv(1024).decode('utf-8')
                 if not message:
                     break
-                print(f"[{client_address}] {message}")
+                # Move the cursor up, print the message, and re-display the prompt
+                sys.stdout.write(f"\r[{client_address}] {message}\nYou (Server): ")
+                sys.stdout.flush()
             except:
                 break
 
@@ -39,7 +42,7 @@ def handle_client(client_socket, client_address):
     client_socket.close()
 
 # Main function to start the server
-def start_server(host='127.0.0.1', port=5557):  # Use the server's IP address here
+def start_server(host='127.0.0.1', port=5559):  # Adjust IP accordingly
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((host, port))
     server.listen()
