@@ -24,5 +24,5 @@ if __name__ == "__main__":
     # The name of the file you want to send
     filename = 'file_to_send.txt'
     # Change server_ip to the IP address of the receiving machine
-    server_ip = '192.168.31.184'  # Example server IP
+    server_ip = '192.168.31.157'  # Example server IP
     send_file(filename, server_ip)
