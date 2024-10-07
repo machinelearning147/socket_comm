@@ -1,9 +1,10 @@
 import socket
 import threading
 import sys
+import argparse
 
 # Function to handle receiving messages from the server
-def start_client(host='127.0.0.1', port=5559):  # Adjust IP accordingly
+def start_client(host='127.0.0.1', port=5555):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((host, port))
     
@@ -13,12 +14,10 @@ def start_client(host='127.0.0.1', port=5559):  # Adjust IP accordingly
     def receive_messages():
         while True:
             try:
-                # Receive message from the server
                 message = client.recv(1024).decode('utf-8')
                 if not message:
                     break
-                # Move the cursor up, print the message, and re-display the prompt
-                sys.stdout.write(f"\rServer: {message}\nYou (Client): ")
+                print(f"\rServer: {message}\nYou (Client): ", end="")
                 sys.stdout.flush()
             except:
                 break
@@ -26,11 +25,12 @@ def start_client(host='127.0.0.1', port=5559):  # Adjust IP accordingly
     # Thread for sending messages to the server
     def send_messages():
         while True:
-            # Input message to send to the server
             message = input("You (Client): ")
+            if message.lower() == 'exit':
+                client.send("Client is disconnecting.".encode('utf-8'))
+                break
             client.send(message.encode('utf-8'))
 
-    # Start both threads for sending and receiving messages
     receive_thread = threading.Thread(target=receive_messages)
     send_thread = threading.Thread(target=send_messages)
 
@@ -41,6 +41,12 @@ def start_client(host='127.0.0.1', port=5559):  # Adjust IP accordingly
     send_thread.join()
 
     client.close()
+    print("[DISCONNECTED] Client disconnected.")
 
 if __name__ == "__main__":
-    start_client()
+    parser = argparse.ArgumentParser(description="Start a TCP client.")
+    parser.add_argument("--host", type=str, default="127.0.0.1", help="IP address of the server (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=5555, help="Port number of the server (default: 5555)")
+    args = parser.parse_args()
+
+    start_client(host=args.host, port=args.port)
